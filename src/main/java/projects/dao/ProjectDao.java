@@ -212,8 +212,48 @@ import provided.util.DaoBase;
 	}
 	}
 
-
+	public boolean modifyProjectDetails(Project project) {
+		// @formatter:off
+		String sql = ""
+				+ "UPDATE " + PROJECT_TABLE + " SET "
+				+ "project_name = ?, "
+				+ "estimated_hours = ?, "
+				+ "actual_hours = ?, "
+				+ "difficulty = ?, "
+				+ "notes = ? "
+				+ "WHERE project_id = ?";
+		//@formatter:on
+		return false;
 	}
+	
+	{
+
+	
+			
+		}
+
+	public boolean deleteProject(Integer projectId) throws SQLException {
+		String sql = "DELETE FROM " + PROJECT_TABLE + " WHERE project_id = ?"; 
+		try(Connection conn=DbConnection.getConnection()) {
+			startTransaction(conn); 
+			
+			try( PreparedStatement stmt = conn.prepareStatement(sql)) {
+				setParameter(stmt, 1, projectId, Integer.class); 
+			}
+		}
+		return false;
+		
+	
+		
+	
+	}
+	}
+	
+	
+
+
+	
+	
 
 
 

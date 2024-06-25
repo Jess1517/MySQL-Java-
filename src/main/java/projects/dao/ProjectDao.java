@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
 import projects.entity.Category;
 import projects.entity.Material;
 import projects.entity.Project;
@@ -223,14 +222,34 @@ import provided.util.DaoBase;
 				+ "notes = ? "
 				+ "WHERE project_id = ?";
 		//@formatter:on
-		return false;
+		try(Connection conn = DbConnection.getConnection()) {
+			startTransaction(conn); 
+		
+		//Connection conn;
+		try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+			setParameter(stmt, 1, project.getProjectName(), String.class);
+			setParameter(stmt, 2, project.getEstimatedHours(), BigDecimal.class);
+			setParameter(stmt, 3, project.getActualHours(), BigDecimal.class); 
+			setParameter(stmt, 4, project.getDifficulty(), Integer.class);
+			setParameter(stmt, 5, project.getNotes(), String.class);
+			setParameter(stmt, 6, project.getProjectId(), Integer.class);
+			
+			boolean modified = stmt.executeUpdate() == 1;
+			
+			commitTransaction(conn);
+			return modified;
+			
+		}catch(Exception e) {
+			rollbackTransaction(conn);
+			throw new DbException(e);
+		}
+		
+		}catch(SQLException e) {
+			throw new DbException(e);
+		}
 	}
 	
-	{
-
 	
-			
-		}
 
 	public boolean deleteProject(Integer projectId) throws SQLException {
 		String sql = "DELETE FROM " + PROJECT_TABLE + " WHERE project_id = ?"; 
@@ -239,23 +258,32 @@ import provided.util.DaoBase;
 			
 			try( PreparedStatement stmt = conn.prepareStatement(sql)) {
 				setParameter(stmt, 1, projectId, Integer.class); 
-			}
+			
+
+		boolean deleted = stmt.executeUpdate() == 1;
+		
+		commitTransaction(conn);
+		return deleted;
+		
+	}
+	catch(Exception e) {
+		rollbackTransaction(conn);
+		throw new DbException(e);
+	 }
+	
+	} catch(SQLException e) {
+		throw new DbException(e);
+	
+		
+	
+	}
 		}
-		return false;
-		
-	
-		
-	
 	}
-	}
-	
-	
-
-
-	
-	
-
-
 
 		
+	
+	
+	
+	
+	
 	
